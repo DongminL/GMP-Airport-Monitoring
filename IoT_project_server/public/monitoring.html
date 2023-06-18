@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+
+     <title>Get Ready - Coming Soon Template</title>
+<!-- 
+
+Get Ready Template
+
+https://templatemo.com/tm-521-get-ready
+
+-->
+     <meta charset="UTF-8">
+     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+     <meta name="description" content="">
+     <meta name="keywords" content="">
+     <meta name="team" content="">
+     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+     <link rel="stylesheet" href="css/bootstrap.min.css">
+     <link rel="stylesheet" href="css/vegas.min.css">
+     <link rel="stylesheet" href="css/font-awesome.min.css">
+
+     <!-- MAIN CSS -->
+     <link rel="stylesheet" href="css/templatemo-style.css">
+
+</head>
+<body>
+     <!-- HOME -->
+     <section id="home">
+          <div class="overlay"></div>
+          <div class="container">
+               <div class="row">
+                    <div class="col-md-12 col-sm-12">
+                         <div class="home-info">
+                              <h1>김포국제공항<br>실시간 모니터링</h1>
+                              <!-- You can change the date time in init.js file -->
+                              <ul class="countdown">
+                                   <li>
+                                        <span class="temp"></span>
+                                        <h3>온도</h3> 
+                                   </li>
+                                   <li>
+                                        <span class="rain"></span>
+                                        <h3>1시간 강수량</h3>
+                                   </li>
+                                   <li>
+                                        <span class="wsd"></span>
+                                        <h3>풍속</h3>
+                                   </li>
+                                   <li>
+                                        <span class="cong"></span>
+                                        <h3>혼잡도</h3>
+                                   </li>
+                                   <li>
+                                        <span class="wait"></span>
+                                        <h3>소요시간</h3>
+                                   </li>
+                              </ul>
+                         </div>
+                    </div>
+
+               </div>
+          </div>
+     </section>
+
+     <!-- SCRIPTS -->
+     <script src="js/jquery.js"></script>
+     <script src="js/bootstrap.min.js"></script>
+     <script src="js/vegas.min.js"></script>
+     <script src="js/countdown.js"></script>
+     <script src="js/init.js"></script>
+     <script src="js/custom.js"></script>
+     <script src="/socket.io/socket.io.js"></script>
+     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+     <script>var $j331 = jQuery.noConflict(true);</script>
+     <script>
+          var socket = io.connect();
+          var timer = null;
+          $j331(document).ready(function(){
+               socket.on("socket_up_temp", function(data){
+                    data = JSON.parse(data);
+                    $(".temp").html(data.tmp+'℃');
+               });
+               socket.on("socket_up_rain", function(data){
+                    data = JSON.parse(data);
+                    $(".rain").html(data.rain+'mm');
+               });
+               socket.on("socket_up_wsd", function(data){
+                    data = JSON.parse(data);
+                    $(".wsd").html(data.wsd+'m/s');
+               });
+               socket.on("socket_up_cong", function(data){
+                    data = JSON.parse(data);
+                    let state = "";
+
+                    switch (data.cong) {
+                         case '2':
+                              state = '보통';
+                              break;
+                         case '3':
+                              state = '혼잡';
+                              break;
+                         case '4':
+                              state = '매우 혼잡';
+                              break;
+                         default:
+                              state = '원활';
+                              break;
+                    }
+                    $(".cong").html(state);
+               });
+               socket.on("socket_up_wait", function(data){
+                    data = JSON.parse(data);
+                    $(".wait").html(data.wait+'분');
+               });
+               if(timer==null){
+                    timer = window.setInterval("timer_1()", 3000);
+               }
+          });
+          function timer_1(){
+               socket.emit("socket_evt_update", JSON.stringify({}));
+          }
+     </script>
+</body>
+</html>
